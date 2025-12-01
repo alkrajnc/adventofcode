@@ -30,12 +30,16 @@ public:
     }
   }
 
-  static void traverse(Direction dir, int step, LinkedList **node) {
+  static void traverse(Direction dir, int step, LinkedList **node,
+                       int &pointToZeroCount) {
     int count = 0;
     if (dir == RIGHT) {
       while ((*node)->next != NULL) {
         if (count >= step)
           return;
+        if ((*node)->value == 0) {
+          pointToZeroCount++;
+        }
         *node = (*node)->next;
         count++;
       }
@@ -43,6 +47,29 @@ public:
       while ((*node)->prev != NULL) {
         if (count >= step)
           return;
+        if ((*node)->value == 0) {
+          pointToZeroCount++;
+        }
+        *node = (*node)->prev;
+        count++;
+      }
+    }
+  }
+  static void traverse(Direction dir, int step, LinkedList **node) {
+    int count = 0;
+    if (dir == RIGHT) {
+      while ((*node)->next != NULL) {
+        if (count >= step)
+          return;
+
+        *node = (*node)->next;
+        count++;
+      }
+    } else {
+      while ((*node)->prev != NULL) {
+        if (count >= step)
+          return;
+
         *node = (*node)->prev;
         count++;
       }
@@ -69,7 +96,6 @@ int main() {
   head->next = &start;
   start.prev = head;
 
-  // LinkedList::printList(&start);
   LinkedList::traverse(LEFT, 49, &head);
 
   std::ifstream inputFile("rotations.txt");
@@ -77,20 +103,15 @@ int main() {
   if (!inputFile.is_open()) {
     throw "File couldnt be opened.";
   }
-
   int password = 0;
-
   std::string line;
   while (std::getline(inputFile, line)) {
     auto rotation = getRotation(line);
-    LinkedList::traverse(rotation.first, rotation.second, &head);
-    if (head->value == 0) {
-      password++;
-    }
+    LinkedList::traverse(rotation.first, rotation.second, &head, password);
   }
 
   inputFile.close();
   delete head;
 
-  std::cout << "\n\nPassword: " << password;
+  std::cout << "\nPassword: " << password;
 }
