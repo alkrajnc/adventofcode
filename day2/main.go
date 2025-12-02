@@ -26,6 +26,18 @@ func split(pos int, str string) []string {
 	return result
 }
 
+func splitMultiple(str string, times int) []string {
+	var splits []string
+
+	var splitTimes = len(str) / times
+
+	for i := 0; i < len(str); i += splitTimes {
+		splits = append(splits, str[i:splitTimes+i])
+	}
+
+	return splits
+}
+
 func isInvalidId(id int) bool {
 
 	var strRep = strconv.Itoa(id)
@@ -39,6 +51,44 @@ func isInvalidId(id int) bool {
 
 	if splitStr[0] == splitStr[1] {
 		return true
+	}
+	return false
+}
+
+func allSame(arr []string) bool {
+	if len(arr) == 0 {
+		return true
+	}
+
+	first := arr[0]
+	for _, item := range arr {
+		if item != first {
+			return false
+		}
+	}
+	return true
+}
+
+func printArray(arr []string) {
+	fmt.Printf("[ ")
+	for _, v := range arr {
+		fmt.Printf("%s, ", v)
+	}
+	fmt.Print(" ]\n")
+}
+
+func isInvalidIdPartTwo(id int) bool {
+	var strRep = strconv.Itoa(id)
+	var length = len(strRep)
+
+	for i := 2; i <= length; i++ {
+		if length%i == 0 {
+			var splits = splitMultiple(strRep, i)
+			if allSame(splits) {
+				return true
+			}
+		}
+
 	}
 	return false
 }
@@ -78,7 +128,7 @@ func main() {
 		}
 
 		for i := int64(lowerLimit); i <= int64(upperLimit); i++ {
-			if isInvalidId(int(i)) {
+			if isInvalidIdPartTwo(int(i)) {
 				solution += i
 			}
 		}
