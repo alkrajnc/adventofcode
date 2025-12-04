@@ -1,5 +1,7 @@
 build/
 
+obj/
+
 ### IntelliJ IDEA ###
 out/
 !**/src/main/**/out/
