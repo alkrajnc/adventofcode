@@ -50,28 +50,27 @@ function partOne(
 }
 
 function alreadyProcessed(ranges: FreshIngredient[], value: number): number {
+  let index = -1;
   ranges.forEach((range, idx) => {
-    if (range.lower <= value) {
-      return idx;
+    if (range.lower <= value && value <= range.upper) {
+      index = idx;
+      return index;
     }
   });
-  return -1;
+  return index;
 }
 
 function partTwo(freshIngredientRange: FreshIngredient[]) {
   const processedRanges: FreshIngredient[] = [];
-  let fresh = 0;
-
   freshIngredientRange.sort((a, b) => a.lower - b.lower);
-  console.log(freshIngredientRange);
 
   freshIngredientRange.forEach((range) => {
     const index = alreadyProcessed(processedRanges, range.lower);
     if (index != -1) {
-      processedRanges[index] = {
-        ...processedRanges[index]!,
-        upper: range.upper,
-      };
+      const interval = processedRanges.at(index)!;
+      if (interval.upper < range.upper) {
+        processedRanges[index] = { ...interval, upper: range.upper };
+      }
     } else {
       processedRanges.push({
         lower: range.lower,
@@ -80,11 +79,10 @@ function partTwo(freshIngredientRange: FreshIngredient[]) {
     }
   });
 
+  let fresh = 0;
   processedRanges.forEach((range) => {
-    fresh += range.upper - range.lower;
+    fresh += range.upper - range.lower + 1;
   });
-
-  console.log(processedRanges);
 
   return fresh;
 }
