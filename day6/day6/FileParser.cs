@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace day6;
 
 public class FileParser
@@ -30,10 +32,11 @@ public class FileParser
     {
         List<Problem> problems = [];
 
+
         var values = _lines[0].Split(" ");
-        for (var i = 0; i < values.Length; i++)
+        foreach (var t in values)
         {
-            if (values[i] is " " or "") continue;
+            if (t is " " or "") continue;
             problems.Add(new Problem());
         }
 
@@ -41,7 +44,6 @@ public class FileParser
         foreach (var line in _lines)
         {
             var lineValues = line.Split(" ");
-
 
             if (lineValues[0] == "*" || lineValues[0] == "+")
             {
@@ -69,46 +71,67 @@ public class FileParser
 
         return problems;
     }
-    
+
+
+    private static bool IsNumber(char num)
+    {
+        return num >= 48 && num <= 57;
+    }
+
+
     public List<Problem> ParseFromLinesPartTwo()
     {
         List<Problem> problems = [];
+        List<Offset> offsets = [];
 
-        var values = _lines[0].Split(" ");
+        var values = _lines.Last();
         for (var i = 0; i < values.Length; i++)
         {
-            if (values[i] is " " or "") continue;
-            problems.Add(new Problem());
+            if (values[i] is '*' or '+')
+            {
+                Offset offset = new Offset
+                {
+                    Start = i,
+                    End = i + 1
+                };
+                for (var k = i + 1; k < values.Length; k++)
+                {
+                    if (values[k] is not ' ') break;
+                    offset.End++;
+                }
+
+                var problem = new Problem
+                {
+                    Operation = values[i] == '+' ? Operation.Add : Operation.Multiply
+                };
+                problems.Add(problem);
+                offsets.Add(offset);
+            }
         }
 
-        var k = 0;
-        foreach (var line in _lines)
+
+        var numberLineCount = _lines.Count - 1;
+        var offsetIndex = 0;
+        foreach (var offset in offsets)
         {
-            var lineValues = line.Split(" ");
-
-
-            if (lineValues[0] == "*" || lineValues[0] == "+")
+            for (int i = offset.Start; i < offset.End; i++)
             {
-                var j = 0;
-                foreach (var operation in lineValues)
+                string numString = "";
+                for (int j = 0; j < numberLineCount; j++)
                 {
-                    if (operation is " " or "") continue;
-                    problems[j].Operation = operation == "+" ? Operation.Add : Operation.Multiply;
-                    j++;
+                    if (IsNumber(_lines[j][i]))
+                    {
+                        numString += _lines[j][i];
+                    }
                 }
-            }
-            else
-            {
-                var j = 0;
-                foreach (var num in lineValues)
+
+                if (numString != "")
                 {
-                    if (num is " " or "") continue;
-                    problems[j].AddNumber(int.Parse(num.Replace(" ", "")));
-                    j++;
+                    problems[offsetIndex].AddNumber(int.Parse(numString));
                 }
             }
 
-            k++;
+            offsetIndex++;
         }
 
         return problems;

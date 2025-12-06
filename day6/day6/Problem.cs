@@ -2,16 +2,28 @@ namespace day6;
 
 public class Problem()
 {
-    private Operation _operation; List<int> _numbers = [];
+    private Operation _operation; 
+    private List<int> _numbers = [];
+    private List<string> _unparsedNumbers = [];
 
     public Operation Operation {get => _operation; set => _operation = value; }
 
 
     public List<int> Numbers => _numbers;
+    
 
     public void AddNumber(int number)
     {
         _numbers.Add(number);
+    }
+
+    private void parse()
+    {
+        var len = 0;
+        for (var i = 0; i < len; i++)
+        {
+            
+        }
     }
     
     
